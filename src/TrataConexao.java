@@ -79,10 +79,15 @@ public class TrataConexao implements Runnable{
                                     reply.setStatus(Status.ERRO);
                                 }
                                 break;
-                            case LOGOUT:
-                                break;
+                            
                             case CADASTRO:
                                 break;
+                            default:
+                                break;
+                        }
+                        
+                    case AUTENTICADO: {
+                        switch(operacao){                   
                             case SALDO:
                                 break;
                             case DEPOSITO:
@@ -94,6 +99,7 @@ public class TrataConexao implements Runnable{
                             default:
                                 break;
                         }
+                    }
                     case DESCONECTADO:
                         break;
                 }
