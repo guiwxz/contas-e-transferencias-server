@@ -4,6 +4,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Map;
 import util.Mensagem;
+import util.Usuario;
 
 /**
  * @author Giovani P.
@@ -13,6 +14,7 @@ public class Server {
     private ServerSocket serverSocket;
     ArrayList<TrataConexao> clientes;
     ArrayList<Thread> threads;
+    ArrayList<Usuario> usuariosCadastrados;
     
     public Server(){
         this.threads = new ArrayList<>();
@@ -38,7 +40,7 @@ public class Server {
             Socket socket = esperaConexao();
             System.out.println("Cliente " + id + " conectado.");
 
-            TrataConexao tc = new TrataConexao(this, socket, id++);
+            TrataConexao tc = new TrataConexao(this, socket, id++, usuariosCadastrados);
             Thread th = new Thread(tc);
             clientes.add(tc);
             threads.add(th);

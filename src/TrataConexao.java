@@ -3,11 +3,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import util.Mensagem;
 import util.Operacao;
 import util.Status;
+import util.Usuario;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -27,12 +29,14 @@ public class TrataConexao implements Runnable{
     private ObjectOutputStream output;
     private ObjectInputStream input; 
     private Status status;
+    private ArrayList<Usuario> usuariosCadastrados;
 
-    public TrataConexao(Server server, Socket socket, int id) {
+    public TrataConexao(Server server, Socket socket, int id, ArrayList<Usuario> usuariosCadastrados) {
         this.server = server;
         this.socket = socket;
         this.id = id;
         this.status = Status.DESCONECTADO;
+        this.usuariosCadastrados = usuariosCadastrados;
     }
     
     @Override
@@ -63,9 +67,9 @@ public class TrataConexao implements Runnable{
             System.out.println("Tratando.....");
             while(status != Status.DESCONECTADO){
                 
-                Mensagem m = (Mensagem) input.readObject();
-                System.out.println("Mensagem do cliente " + id + ": \n" + m);
-                Operacao operacao = m.getOperacao();
+                Mensagem req = (Mensagem) input.readObject();
+                System.out.println("Mensagem do cliente " + id + ": \n" + req);
+                Operacao operacao = req.getOperacao();
                 Mensagem reply = new Mensagem(operacao);
                 
                 switch(status){
@@ -81,6 +85,33 @@ public class TrataConexao implements Runnable{
                                 break;
                             
                             case CADASTRO:
+                                try {
+                                    
+                                    String usuario = (String) req.getParam("id");
+                                    String senha = (String) req.getParam("senha");
+                                    
+                                    Boolean outFlag = false; 
+                                    
+                                    for (Usuario u: usuariosCadastrados) {
+                                        if (u.getId().equals(usuario)) {
+                                            outFlag = true;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (outFlag) {
+                                        reply.setStatus(Status.ERRO);
+                                        reply.setParam("res", "Nome de usuário/id já cadastrado");
+                                        break;
+                                    }
+                                    
+                                    usuariosCadastrados.add(new Usuario(usuario, senha));
+                                    reply.setStatus(Status.OK);
+                                    reply.setParam("res", "Usuário cadastrado");
+                                    
+                                } catch (Exception e) {
+                                    reply.setStatus(Status.ERRO);
+                                }
                                 break;
                             default:
                                 break;
