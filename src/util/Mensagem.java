@@ -13,7 +13,7 @@ public class Mensagem implements Serializable{
     private Operacao operacao;
     private Status status;
     
-    Map<String, String> params;
+    Map<String, Object> params;
     
     public Mensagem(Operacao operacao){
         this.operacao = operacao;
@@ -36,7 +36,7 @@ public class Mensagem implements Serializable{
         return status;
     }
     
-    public void setParam(String chave, String valor){
+    public void setParam(String chave, Object valor){
         params.put(chave, valor);
     }
     

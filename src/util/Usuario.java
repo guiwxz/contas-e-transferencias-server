@@ -5,6 +5,9 @@
  */
 package util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author GUI
@@ -12,12 +15,14 @@ package util;
 public class Usuario {
     private String id;
     private String senha;
-    private double saldo;
+    private float saldo;
+    private List<String> extrato;
     
     public Usuario(String usuario, String senha) {
-        this.id = id;
+        this.id = usuario;
         this.senha = senha;
         this.saldo = 0;
+        this.extrato = new ArrayList<String>();
     }
 
     public String getId() {
@@ -36,13 +41,61 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public double getSaldo() {
+    public float getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(double saldo) {
+    public void setSaldo(float saldo) {
         this.saldo = saldo;
     }
+
+    public List<String> getExtrato() {
+        return extrato;
+    }
+
+    public void setExtrato(List<String> extrato) {
+        this.extrato = extrato;
+    }
     
+    /**
+     * 
+     * @param valor
+     * @param tipo 
+     * * 0: valor positivo
+     * * 1: valor negativo
+     */
+    public void addTransacao(float valor, Integer tipo) {
+        if (tipo == 0) {
+           this.extrato.add("+ " + valor); 
+        } else {        
+            this.extrato.add("- " + valor);
+        } 
+    }
     
+    public void handleDeposito(float valor) {
+        this.saldo = this.saldo + valor;
+        this.extrato.add("+ " + valor);
+    }
+    
+    public void handleTransferencia(float valor) {
+        this.saldo = this.saldo - valor;
+        this.extrato.add("- " + valor);
+    }
+    
+    public String getFormatedExtrato() {
+        String formated = "\n------------------\n";
+        
+        if (this.extrato.size() > 0) {
+        
+            for (String it: this.extrato) {
+                formated += it + "\n";
+            }
+        } else {
+            formated += "Não há movimentações registradas.";
+        }
+        
+        formated += "\n------------------\n";
+        
+        return formated;
+    }
 }
