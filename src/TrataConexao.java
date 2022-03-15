@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import util.Mensagem;
@@ -147,7 +148,8 @@ public class TrataConexao implements Runnable{
                             case CARTEIRAS: {
                                 try {
                                     reply.setOperacao(Operacao.CARTEIRASREPLY);
-                                    if (this.server.getUsuariosCadastrados().size() < 1 || this.server.getUsuariosCadastrados() == null) {
+                                    List<Usuario> carteirasArray = this.server.getUsuariosCadastrados();
+                                    if (carteirasArray.size() < 1 || carteirasArray == null) {
                                         reply.setStatus(Status.OK);
                                         reply.setParam("res", "Nenhuma conta está cadastrada");
                                         reply.setParam("carteiras", null);
@@ -155,7 +157,7 @@ public class TrataConexao implements Runnable{
                                     }
                                     
                                     reply.setStatus(Status.OK);
-                                    reply.setParam("carteiras", this.server.getUsuariosCadastrados());
+                                    reply.setParam("carteiras", carteirasArray);
                                     
                                     
                                 } catch (Exception e) {
@@ -189,15 +191,17 @@ public class TrataConexao implements Runnable{
                         switch(operacao){  
                             case CARTEIRAS: {
                                 try {
-                                    
+                                    reply.setOperacao(Operacao.CARTEIRASREPLY);
                                     if (this.server.getUsuariosCadastrados().size() < 1 || this.server.getUsuariosCadastrados() == null) {
                                         reply.setStatus(Status.OK); // verificar se aqui retorna OK ou ERRO qdo nao existe contas
                                         reply.setParam("res", "Nenhuma conta está cadastrada");
                                         break;
                                     }
                                     
+                                    List<Usuario> carteirasArray = this.server.getUsuariosCadastrados();
+
                                     reply.setStatus(Status.OK);
-                                    reply.setParam("res", this.server.getUsuariosCadastrados());
+                                    reply.setParam("carteiras", carteirasArray);
                                     
                                     
                                 } catch (Exception e) {
@@ -309,8 +313,7 @@ public class TrataConexao implements Runnable{
                             case RECOMPENSAR: {
                                 try {
                                     reply.setOperacao(Operacao.RECOMPENSARREPLY);
-                                    System.out.println("aa: " + usuarioId);
-                                    if (usuarioId != "admin") {
+                                    if (!usuarioId.equals("admin")) {
                                         reply.setParam("res", "Você não possui acesso de administrador");
                                         reply.setStatus(Status.OPINVALIDA);
                                         break;
@@ -324,7 +327,7 @@ public class TrataConexao implements Runnable{
                                         float porcentagem = 0;
                                         porcentagem = (u.getSaldo() * 100) / saldoTotal;
 
-                                        deposito = this.server.getPool() * porcentagem;
+                                        deposito = this.server.getPool() * (porcentagem / 100);
 
                                         u.handleDeposito(deposito);
                                     }

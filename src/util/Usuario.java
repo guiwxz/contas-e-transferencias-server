@@ -5,6 +5,7 @@
  */
 package util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  *
  * @author GUI
  */
-public class Usuario {
+public class Usuario implements Serializable {
     private String id;
     private String senha;
     private float saldo;
@@ -91,10 +92,10 @@ public class Usuario {
                 formated += it + "\n";
             }
         } else {
-            formated += "Não há movimentações registradas.";
+            formated += "Não há movimentações registradas.\n";
         }
         
-        formated += "\n------------------\n";
+        formated += "------------------\n";
         
         return formated;
     }
